@@ -469,21 +469,31 @@ class ShapeController {
     this.boundHandleMove = this.handleMove.bind(this);
     this.boundHandleMoveEnd = this.handleMoveEnd.bind(this);
     
-    // Mouse events
-    this.element.addEventListener('mousedown', e => {
-      this.handleMoveStart(e);
-    });
+    // Get the actual shape elements (polygon, path, rect, circle, ellipse) within the SVG
+    const shapeElements = this.element.querySelectorAll('svg polygon, svg path, svg rect, svg circle, svg ellipse');
+    
+    shapeElements.forEach(shapeEl => {
+      // Mouse events on actual shape elements only
+      shapeEl.addEventListener('mousedown', e => {
+        this.handleMoveStart(e);
+      });
 
-    // Touch events
-    this.element.addEventListener('touchstart', e => {
-      this.handleMoveStart(e);
-    }, { passive: false });
+      // Touch events on actual shape elements only
+      shapeEl.addEventListener('touchstart', e => {
+        this.handleMoveStart(e);
+      }, { passive: false });
+    });
   }
 
   setupRotation() {
-    this.element.addEventListener('contextmenu', e => {
-      e.preventDefault();
-      this.rotate();
+    // Get the actual shape elements for context menu
+    const shapeElements = this.element.querySelectorAll('svg polygon, svg path, svg rect, svg circle, svg ellipse');
+    
+    shapeElements.forEach(shapeEl => {
+      shapeEl.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        this.rotate();
+      });
     });
   }
 
