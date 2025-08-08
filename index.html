@@ -361,8 +361,8 @@
                   </pattern>
                   <mask id="archMaskPreview">
                     <rect x="0" y="0" width="240" height="80" fill="white"/>
-                    <!-- Arch cutout - grid-aligned (80px wide opening to match grid) -->
-                    <path d="M 80 40 L 80 80 L 160 80 L 160 40 A 40 40 0 0 0 80 40" fill="black"/>
+                    <!-- Arch cutout - proper arch opening at bottom -->
+                    <path d="M 90 80 L 90 50 A 30 20 0 0 1 150 50 L 150 80 Z" fill="black"/>
                   </mask>
                 </defs>
                 <!-- Rectangular beam with arch hole using mask -->
@@ -389,7 +389,7 @@
                 </g>
                 <!-- Arch outline -->
                 <path
-                  d="M 80 40 A 40 40 0 0 1 160 40"
+                  d="M 90 50 A 30 20 0 0 1 150 50"
                   fill="none"
                   stroke="#333"
                   stroke-width="2"
