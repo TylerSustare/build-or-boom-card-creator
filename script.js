@@ -8,7 +8,21 @@
 // =============================================================================
 
 const CONFIG = {
-  SHAPE_SIZE: { width: 80, height: 80 },
+  SHAPE_SIZES: {
+    // 1x1 unit shapes (80x80px = 4x4 grid units)
+    'square': { width: 80, height: 80 },
+    'triangle': { width: 80, height: 80 },
+    'half-moon': { width: 80, height: 80 },
+    'cone': { width: 80, height: 80 },
+    // 3x1 unit shapes (240x80px = 12x4 grid units) 
+    '2x4': { width: 240, height: 80 },
+    'arch': { width: 240, height: 80 },
+    'beam': { width: 240, height: 80 },
+    'foreman': { width: 240, height: 80 },
+    // Special cases
+    'barrel-cylinder': { width: 80, height: 80 },
+    'barrel-circle': { width: 80, height: 80 }
+  },
   GRID_SIZE: 20,
   MOBILE_BREAKPOINT: 768,
   DRAG_THRESHOLD: 5,
@@ -118,9 +132,11 @@ class ShapeFactory {
     const svg = paletteItem.querySelector('.shape-svg');
     if (!svg) return null;
     
+    const shapeSize = CONFIG.SHAPE_SIZES[shapeType] || { width: 80, height: 80 };
+    
     return {
       svg: svg.innerHTML,
-      ...CONFIG.SHAPE_SIZE
+      ...shapeSize
     };
   }
 
@@ -158,7 +174,11 @@ class ShapeFactory {
       .replace(/id="(archMask)"/g, `id="$1${id}"`)
       .replace(/url\\(#(archMask)\\)/g, `url(#$1${id})`);
     
-    return `<svg width="${width}" height="${height}" viewBox="0 0 80 60">${updatedContent}</svg>`;
+    // Use appropriate viewBox based on shape dimensions
+    const viewBoxWidth = width === 240 ? 240 : 80;
+    const viewBoxHeight = 80;
+    
+    return `<svg width="${width}" height="${height}" viewBox="0 0 ${viewBoxWidth} ${viewBoxHeight}">${updatedContent}</svg>`;
   }
 }
 
@@ -287,13 +307,16 @@ class DragDropManager {
       
       if (this.isOverBuildArea(touch, rect)) {
         const shapeType = this.touchDraggedElement.dataset.shape;
-        const x = touch.clientX - rect.left - CONFIG.SHAPE_SIZE.width / 2;
-        const y = touch.clientY - rect.top - CONFIG.SHAPE_SIZE.height / 2;
+        const shapeSize = CONFIG.SHAPE_SIZES[shapeType] || { width: 80, height: 80 };
+        const x = touch.clientX - rect.left - shapeSize.width / 2;
+        const y = touch.clientY - rect.top - shapeSize.height / 2;
         
         this.createShape(shapeType, x, y, buildArea);
       }
+    } else {
+      // If it was just a tap (no dragging), handle tap-to-add directly
+      this.handleTapToAddTouch(this.touchDraggedElement);
     }
-    // If it was just a tap (no dragging), let the click handler take care of it
     
     this.touchDraggedElement.style.opacity = '1';
     this.touchDraggedElement = null;
@@ -314,8 +337,9 @@ class DragDropManager {
     const rect = buildArea.getBoundingClientRect();
     
     // Place shape in center of build area
-    const centerX = (rect.width / 2) - (CONFIG.SHAPE_SIZE.width / 2);
-    const centerY = (rect.height / 2) - (CONFIG.SHAPE_SIZE.height / 2);
+    const shapeSize = CONFIG.SHAPE_SIZES[shapeType] || { width: 80, height: 80 };
+    const centerX = (rect.width / 2) - (shapeSize.width / 2);
+    const centerY = (rect.height / 2) - (shapeSize.height / 2);
     
     // Add slight random offset so multiple taps don't stack exactly
     const offsetX = (Math.random() - 0.5) * 40;
@@ -331,6 +355,36 @@ class DragDropManager {
     targetElement.style.transform = 'scale(0.95)';
     setTimeout(() => {
       targetElement.style.transform = '';
+    }, 150);
+  }
+
+  handleTapToAddTouch(element) {
+    const buildArea = document.getElementById('build-area');
+    const shapeType = element.dataset.shape;
+    
+    if (!buildArea || !shapeType) return;
+    
+    // Get build area dimensions
+    const rect = buildArea.getBoundingClientRect();
+    
+    // Place shape in center of build area
+    const shapeSize = CONFIG.SHAPE_SIZES[shapeType] || { width: 80, height: 80 };
+    const centerX = (rect.width / 2) - (shapeSize.width / 2);
+    const centerY = (rect.height / 2) - (shapeSize.height / 2);
+    
+    // Add slight random offset so multiple taps don't stack exactly
+    const offsetX = (Math.random() - 0.5) * 40;
+    const offsetY = (Math.random() - 0.5) * 40;
+    
+    const finalX = Utils.snapToGrid(centerX + offsetX);
+    const finalY = Utils.snapToGrid(centerY + offsetY);
+    
+    this.createShape(shapeType, finalX, finalY, buildArea);
+    
+    // Provide visual feedback
+    element.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      element.style.transform = '';
     }, 150);
   }
 
@@ -356,8 +410,9 @@ class DragDropManager {
 
     const shapeType = e.dataTransfer.getData('text/plain');
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left - CONFIG.SHAPE_SIZE.width / 2;
-    const y = e.clientY - rect.top - CONFIG.SHAPE_SIZE.height / 2;
+    const shapeSize = CONFIG.SHAPE_SIZES[shapeType] || { width: 80, height: 80 };
+    const x = e.clientX - rect.left - shapeSize.width / 2;
+    const y = e.clientY - rect.top - shapeSize.height / 2;
 
     this.createShape(shapeType, x, y, e.currentTarget);
   }
@@ -482,7 +537,9 @@ class ShapeController {
       const snappedY = Utils.snapToGrid(rawY);
       
       // Allow shapes to use full height - only prevent going above container
-      const newX = Math.max(0, Math.min(snappedX, this.container.clientWidth - CONFIG.SHAPE_SIZE.width));
+      const shapeType = this.element.dataset.shapeType;
+      const shapeSize = CONFIG.SHAPE_SIZES[shapeType] || { width: 80, height: 80 };
+      const newX = Math.max(0, Math.min(snappedX, this.container.clientWidth - shapeSize.width));
       const newY = Math.max(0, snappedY); // No upper bound - allow shapes to extend below container
 
       this.element.style.left = `${newX}px`;
@@ -524,14 +581,26 @@ class ShapeController {
     this.element.classList.add('selected');
     
     // Show context menu
-    const clientX = this.startEvent.touches ? this.startEvent.touches[0].clientX : this.startEvent.clientX;
-    const clientY = this.startEvent.touches ? this.startEvent.touches[0].clientY : this.startEvent.clientY;
+    let clientX, clientY;
     
-    eventBus.emit('showContextMenu', {
-      shape: this.element,
-      x: clientX,
-      y: clientY
-    });
+    if (this.startEvent.type === 'touchstart') {
+      // For touch events, use the original touch position stored during touchstart
+      clientX = this.startX;
+      clientY = this.startY;
+    } else {
+      // For mouse events
+      clientX = this.startEvent.clientX;
+      clientY = this.startEvent.clientY;
+    }
+    
+    // Add small delay for mobile to ensure touch events are done
+    setTimeout(() => {
+      eventBus.emit('showContextMenu', {
+        shape: this.element,
+        x: clientX,
+        y: clientY
+      });
+    }, 50);
   }
 
   rotate() {
@@ -652,28 +721,54 @@ class ContextMenuManager {
   createMenu() {
     const menu = document.createElement('div');
     menu.className = 'context-menu';
+    menu.style.cssText = `
+      position: fixed;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      min-width: 150px;
+      padding: 8px 0;
+    `;
+    
+    // Style the menu items
+    const itemStyle = `
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+    `;
+    
     menu.innerHTML = `
-      <button class="context-menu-item" data-action="rotate">
-        <svg class="context-menu-icon" viewBox="0 0 24 24" fill="currentColor">
+      <button class="context-menu-item" data-action="rotate" style="${itemStyle}">
+        <svg class="context-menu-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 18px; height: 18px;">
           <path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6z"/>
           <path d="M18.76 7.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/>
         </svg>
         Rotate 90°
       </button>
-      <button class="context-menu-item" data-action="flip-horizontal">
-        <svg class="context-menu-icon" viewBox="0 0 24 24" fill="currentColor">
+      <button class="context-menu-item" data-action="flip-horizontal" style="${itemStyle}">
+        <svg class="context-menu-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 18px; height: 18px;">
           <path d="M15 21h2v-2h-2v2zm4-12h2V7h-2v2zM3 5v14c0 1.1.9 2 2 2h4v-2H5V5h4V3H5c-1.1 0-2 .9-2 2zm16-2v2h2c0-1.1-.9-2-2-2zm-8 2h2V3h-2v2zm4 14h2v-2h-2v2zm0-4h2v-2h-2v2zm0-4h2V9h-2v2z"/>
         </svg>
         Flip Horizontal
       </button>
-      <button class="context-menu-item" data-action="flip-vertical">
-        <svg class="context-menu-icon" viewBox="0 0 24 24" fill="currentColor">
+      <button class="context-menu-item" data-action="flip-vertical" style="${itemStyle}">
+        <svg class="context-menu-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 18px; height: 18px;">
           <path d="M16 17h2v-2h-2v2zm1.5-10H16V5h1.5v2zm2.5 6V7.5h-2V9h2zm-13-6v2H5V7h2zm2.5 10H9v-2h1.5v2zM12 18.5v-2h-2v2h2zM9 5v2h2V5H9zm10 0V3c1.1 0 2 .9 2 2h-2zm0 12h2v-2h-2v2zm0-8h2V7h-2v2zm0 4h2v-2h-2v2zM5 21v-8H3v10c0 1.1.9 2 2 2h8v-2H5v-2z"/>
         </svg>
         Flip Vertical
       </button>
-      <button class="context-menu-item destructive" data-action="delete">
-        <svg class="context-menu-icon" viewBox="0 0 24 24" fill="currentColor">
+      <button class="context-menu-item destructive" data-action="delete" style="${itemStyle} color: #dc2626;">
+        <svg class="context-menu-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 18px; height: 18px;">
           <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
         </svg>
         Delete
