@@ -20,7 +20,7 @@ const CONFIG = {
     'beam': { width: 240, height: 80 },
     'foreman': { width: 240, height: 80 },
     // Special cases
-    'barrel-cylinder': { width: 80, height: 80 },
+    'barrel-cylinder': { width: 80, height: 160 },
     'barrel-circle': { width: 80, height: 80 }
   },
   GRID_SIZE: 20,
