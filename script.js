@@ -1208,6 +1208,14 @@ class CardCreatorApp {
     eventBus.on('hideContextMenu', () => {
       this.managers.contextMenu.hide();
     });
+    
+    // Clear all button
+    const clearBtn = document.getElementById('clear-all-btn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        this.managers.keyboard.clearAllShapes();
+      });
+    }
   }
 
   showInstructions() {
