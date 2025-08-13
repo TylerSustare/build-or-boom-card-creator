@@ -58,7 +58,9 @@ const Utils = {
   },
 
   snapToGrid(value) {
-    return Math.round(value / CONFIG.GRID_SIZE) * CONFIG.GRID_SIZE;
+    const snapped = Math.round(value / CONFIG.GRID_SIZE) * CONFIG.GRID_SIZE;
+    console.log(`Snapping ${value} to ${snapped} (grid: ${CONFIG.GRID_SIZE})`);
+    return snapped;
   },
 
   loadScript(src) {
@@ -151,12 +153,17 @@ class ShapeFactory {
     element.id = id;
     element.dataset.shapeType = shapeType;
     
-    // Position shape - allow full height usage
-    const boundedX = Math.max(0, Math.min(x, container.clientWidth - shapeData.width));
-    const boundedY = Math.max(0, y); // No upper bound - allow shapes to extend below container
+    // Position shape - allow full height usage and snap to grid
+    const rawBoundedX = Math.max(0, Math.min(x, container.clientWidth - shapeData.width));
+    const rawBoundedY = Math.max(0, y); // No upper bound - allow shapes to extend below container
     
-    element.style.left = `${boundedX}px`;
-    element.style.top = `${boundedY}px`;
+    const snappedX = Utils.snapToGrid(rawBoundedX);
+    const snappedY = Utils.snapToGrid(rawBoundedY);
+    
+    console.log(`Shape ${shapeType}: raw(${x}, ${y}) -> bounded(${rawBoundedX}, ${rawBoundedY}) -> snapped(${snappedX}, ${snappedY})`);
+    
+    element.style.left = `${snappedX}px`;
+    element.style.top = `${snappedY}px`;
 
     // Create unique SVG with updated IDs
     const uniqueSvg = this.createUniqueSvg(shapeData.svg, id, shapeData);
@@ -308,8 +315,11 @@ class DragDropManager {
       if (this.isOverBuildArea(touch, rect)) {
         const shapeType = this.touchDraggedElement.dataset.shape;
         const shapeSize = CONFIG.SHAPE_SIZES[shapeType] || { width: 80, height: 80 };
-        const x = touch.clientX - rect.left - shapeSize.width / 2;
-        const y = touch.clientY - rect.top - shapeSize.height / 2;
+        const rawX = touch.clientX - rect.left - shapeSize.width / 2;
+        const rawY = touch.clientY - rect.top - shapeSize.height / 2;
+        
+        const x = Utils.snapToGrid(rawX);
+        const y = Utils.snapToGrid(rawY);
         
         this.createShape(shapeType, x, y, buildArea);
       }
@@ -411,8 +421,11 @@ class DragDropManager {
     const shapeType = e.dataTransfer.getData('text/plain');
     const rect = e.currentTarget.getBoundingClientRect();
     const shapeSize = CONFIG.SHAPE_SIZES[shapeType] || { width: 80, height: 80 };
-    const x = e.clientX - rect.left - shapeSize.width / 2;
-    const y = e.clientY - rect.top - shapeSize.height / 2;
+    const rawX = e.clientX - rect.left - shapeSize.width / 2;
+    const rawY = e.clientY - rect.top - shapeSize.height / 2;
+
+    const x = Utils.snapToGrid(rawX);
+    const y = Utils.snapToGrid(rawY);
 
     this.createShape(shapeType, x, y, e.currentTarget);
   }
