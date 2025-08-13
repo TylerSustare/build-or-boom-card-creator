@@ -13,7 +13,7 @@ const CONFIG = {
     'square': { width: 80, height: 80 },
     'triangle': { width: 80, height: 80 },
     'half-moon': { width: 80, height: 80 },
-    'cone': { width: 80, height: 80 },
+    'cone': { width: 80, height: 40 },
     // 3x1 unit shapes (240x80px = 12x4 grid units) 
     '2x4': { width: 240, height: 80 },
     'arch': { width: 240, height: 80 },
@@ -183,7 +183,7 @@ class ShapeFactory {
     
     // Use appropriate viewBox based on shape dimensions
     const viewBoxWidth = width === 240 ? 240 : 80;
-    const viewBoxHeight = 80;
+    const viewBoxHeight = height;
     
     return `<svg width="${width}" height="${height}" viewBox="0 0 ${viewBoxWidth} ${viewBoxHeight}">${updatedContent}</svg>`;
   }
