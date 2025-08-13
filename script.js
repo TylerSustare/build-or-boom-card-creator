@@ -18,7 +18,7 @@ const CONFIG = {
     '2x4': { width: 240, height: 80 },
     'arch': { width: 240, height: 80 },
     'beam': { width: 240, height: 80 },
-    'foreman': { width: 240, height: 80 },
+    'foreman': { width: 160, height: 160 },
     // Special cases
     'barrel-cylinder': { width: 80, height: 160 },
     'barrel-circle': { width: 80, height: 80 }
@@ -182,7 +182,7 @@ class ShapeFactory {
       .replace(/url\\(#(archMask)\\)/g, `url(#$1${id})`);
     
     // Use appropriate viewBox based on shape dimensions
-    const viewBoxWidth = width === 240 ? 240 : 80;
+    const viewBoxWidth = width;
     const viewBoxHeight = height;
     
     return `<svg width="${width}" height="${height}" viewBox="0 0 ${viewBoxWidth} ${viewBoxHeight}">${updatedContent}</svg>`;

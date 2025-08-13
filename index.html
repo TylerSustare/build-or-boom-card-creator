@@ -333,27 +333,9 @@
 
             <div class="shape-item bg-white border-2 border-gray-300 rounded-lg p-2 lg:p-4 text-center cursor-grab transition-all hover:border-blue-600 hover:-translate-y-1 hover:shadow-lg select-none min-h-16 lg:min-h-24 flex flex-col justify-center items-center active:cursor-grabbing active:scale-105 touch-none" draggable="true" data-shape="triangle">
               <svg class="shape-svg w-12 h-9 lg:w-20 lg:h-15 block mb-1 lg:mb-2" viewBox="0 0 80 80">
-                <defs>
-                  <pattern
-                    id="hatchTrianglePreview"
-                    patternUnits="userSpaceOnUse"
-                    width="4"
-                    height="4"
-                    patternTransform="rotate(45)"
-                  >
-                    <rect width="4" height="2" fill="#ff8c00" />
-                  </pattern>
-                </defs>
                 <polygon
                   points="0,0 0,80 80,80"
                   fill="#228B22"
-                  stroke="#333"
-                  stroke-width="2"
-                />
-                <polygon
-                  points="0,0 0,80 80,80"
-                  fill="url(#hatchTrianglePreview)"
-                  opacity="0.6"
                 />
               </svg>
               <span class="text-xs lg:text-sm font-bold text-gray-800 leading-tight">Triangle</span>
@@ -485,106 +467,44 @@
             </div>
 
             <div class="shape-item bg-white border-2 border-gray-300 rounded-lg p-2 lg:p-4 text-center cursor-grab transition-all hover:border-blue-600 hover:-translate-y-1 hover:shadow-lg select-none min-h-16 lg:min-h-24 flex flex-col justify-center items-center active:cursor-grabbing active:scale-105 touch-none" draggable="true" data-shape="foreman">
-              <svg class="shape-svg w-12 h-9 lg:w-20 lg:h-15 block mb-1 lg:mb-2" viewBox="0 0 240 80">
-                <!-- Hard hat/helmet (dome shape) - extended closer to nose -->
-                <path
-                  d="M 105 15 Q 105 5 120 5 Q 135 5 135 15 L 130 17 L 110 17 Z"
-                  fill="#ffd700"
-                  stroke="#333"
-                  stroke-width="2"
-                />
-                <!-- Face/head -->
-                <rect
-                  x="110"
-                  y="15"
-                  width="20"
-                  height="15"
-                  fill="#ffdbac"
-                  stroke="#333"
-                  stroke-width="2"
-                />
-                <!-- Nose -->
-                <polygon
-                  points="120,18 118,21 122,21"
-                  fill="#ffdbac"
-                  stroke="#333"
-                  stroke-width="1"
-                />
-                <!-- Toothy grin mouth - mostly white -->
-                <ellipse cx="120" cy="24" rx="6" ry="3" fill="white" stroke="#333" stroke-width="1"/>
-                <rect x="115" y="23" width="1" height="2" fill="#333"/>
-                <rect x="117" y="23" width="1" height="2" fill="#333"/>
-                <rect x="119" y="23" width="1" height="2" fill="#333"/>
-                <rect x="121" y="23" width="1" height="2" fill="#333"/>
-                <rect x="123" y="23" width="1" height="2" fill="#333"/>
-                <rect x="125" y="23" width="1" height="2" fill="#333"/>
-                <!-- Body/torso -->
-                <rect
-                  x="108"
-                  y="27"
-                  width="24"
-                  height="20"
-                  fill="#4169e1"
-                  stroke="#333"
-                  stroke-width="2"
-                />
-                <!-- Arms -->
-                <rect
-                  x="98"
-                  y="7"
-                  width="8"
-                  height="30"
-                  fill="#ffdbac"
-                  stroke="#333"
-                  stroke-width="2"
-                />
-                <rect
-                  x="134"
-                  y="7"
-                  width="8"
-                  height="30"
-                  fill="#ffdbac"
-                  stroke="#333"
-                  stroke-width="2"
-                />
-                <!-- Legs -->
-                <rect
-                  x="112"
-                  y="47"
-                  width="6"
-                  height="15"
-                  fill="#4169e1"
-                  stroke="#333"
-                  stroke-width="2"
-                />
-                <rect
-                  x="122"
-                  y="47"
-                  width="6"
-                  height="15"
-                  fill="#4169e1"
-                  stroke="#333"
-                  stroke-width="2"
-                />
-                <!-- Shoes - black and extending to the sides -->
-                <ellipse
-                  cx="113"
-                  cy="67"
-                  rx="9"
-                  ry="4"
-                  fill="#000"
-                  stroke="#333"
-                  stroke-width="1"
-                />
-                <ellipse
-                  cx="127"
-                  cy="67"
-                  rx="9"
-                  ry="4"
-                  fill="#000"
-                  stroke="#333"
-                  stroke-width="1"
-                />
+              <svg class="shape-svg w-12 h-9 lg:w-20 lg:h-15 block mb-1 lg:mb-2" viewBox="0 0 160 160">
+                <!-- Black shoes -->
+                <ellipse cx="60" cy="148" rx="16" ry="10" fill="#2a2a2a"/>
+                <ellipse cx="100" cy="148" rx="16" ry="10" fill="#2a2a2a"/>
+                
+                <!-- Blue body/torso (main sphere) -->
+                <circle cx="80" cy="104" r="40" fill="#4169E1"/>
+                
+                <!-- Orange/peach arms raised up -->
+                <!-- Left arm -->
+                <ellipse cx="40" cy="72" rx="12" ry="32" fill="#FF9966" transform="rotate(-30 40 72)"/>
+                <!-- Right arm -->
+                <ellipse cx="120" cy="72" rx="12" ry="32" fill="#FF9966" transform="rotate(30 120 72)"/>
+                
+                <!-- Flat hands like holding something overhead -->
+                <ellipse cx="28" cy="46" rx="12" ry="8" fill="#FFAA88"/>
+                <ellipse cx="132" cy="46" rx="12" ry="8" fill="#FFAA88"/>
+                
+                <!-- Peach head/face (overlapping top of blue body) -->
+                <circle cx="80" cy="72" r="24" fill="#FFAA88"/>
+                
+                <!-- Simple white crescent smile with teeth lines -->
+                <path d="M 68 74 Q 80 82, 92 74 L 90 78 Q 80 84, 70 78 Z" 
+                      fill="white" stroke="#333" stroke-width="1"/>
+                <!-- Simple vertical lines for teeth -->
+                <line x1="72" y1="76" x2="72" y2="80" stroke="#333" stroke-width="1"/>
+                <line x1="76" y1="77" x2="76" y2="81" stroke="#333" stroke-width="1"/>
+                <line x1="80" y1="77" x2="80" y2="82" stroke="#333" stroke-width="1"/>
+                <line x1="84" y1="77" x2="84" y2="81" stroke="#333" stroke-width="1"/>
+                <line x1="88" y1="76" x2="88" y2="80" stroke="#333" stroke-width="1"/>
+                
+                <!-- Yellow hard hat sitting on top of head -->
+                <!-- Hat brim -->
+                <ellipse cx="80" cy="58" rx="34" ry="14" fill="#FFD700"/>
+                <!-- Hat dome -->
+                <ellipse cx="80" cy="54" rx="28" ry="22" fill="#FFD700"/>
+                <!-- Hat top ridge/button -->
+                <rect x="78" y="36" width="4" height="16" fill="#FFA500"/>
               </svg>
               <span class="text-xs lg:text-sm font-bold text-gray-800 leading-tight">The Foreman</span>
             </div>
